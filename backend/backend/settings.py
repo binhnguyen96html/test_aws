@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 # from dotenv import load_dotenv
 import os
-import environ
-
+# import environ
+from utils.aws_secrets import get_secret
 
 
 # dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
@@ -24,18 +24,21 @@ import environ
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+# env = environ.Env()
+# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Load the secret from AWS Secrets Manager
+secrets = get_secret()
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-vzw!xfk1ouj@d=$vymducs%73h2sz#p7re_yae8%=g37tzyb$b'
+SECRET_KEY = secrets.get('SECRET_KEY', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = secrets.get('DEBUG', False)
 
 ALLOWED_HOSTS = ['*', '208.95.233.104']
 
@@ -114,11 +117,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME'),
-        'USER': env('DATABASE_USER'),
-        'PASSWORD': env('DATABASE_PASSWORD'),
-        'HOST': env('DATABASE_HOST'),
-        'PORT': env('DATABASE_PORT'),
+        'NAME': secrets.get('DATABASE_NAME'),
+        'USER': secrets.get('DATABASE_USER'),
+        'PASSWORD': secrets.get('DATABASE_PASSWORD'),
+        'HOST': secrets.get('DATABASE_HOST'),
+        'PORT': secrets.get('DATABASE_PORT'),
     }
 }
  
@@ -166,9 +169,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+AWS_ACCESS_KEY_ID = secrets.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = secrets.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = secrets.get("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_SIGNATURE_NAME = 's3v4',
 AWS_S3_REGION_NAME = 'us-west-1'
 AWS_S3_FILE_OVERWRITE = False
