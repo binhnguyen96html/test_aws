@@ -40,7 +40,7 @@ SECRET_KEY = secrets.get('SECRET_KEY', 'SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = secrets.get('DEBUG', False)
 
-ALLOWED_HOSTS = ['*', '208.95.233.104']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
